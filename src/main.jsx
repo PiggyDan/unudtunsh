@@ -1,6 +1,20 @@
 import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
-import { ChevronDown, ChevronUp, Plus, Trash2, CheckCircle2, FileText } from "lucide-react";
+import {
+  ChevronDown,
+  Plus,
+  Trash2,
+  CheckCircle2,
+  FileText,
+  ClipboardList,
+  Truck,
+  Users,
+  ShieldCheck,
+  ImageUp,
+  Send,
+  Loader2,
+  PhoneCall
+} from "lucide-react";
 import companyLogo from "./assets/logos/zcm.png";
 import "./styles.css";
 import SafetyReader from "./SafetyReader";
@@ -220,40 +234,41 @@ function App() {
 
   if (submitted) {
     return (
-      <main className="page">
-        <div className="formCard successScreen">
-          <div className="success successScreenBox">
-            <CheckCircle2 size={20} />
-            <div>
-              <strong>Амжилттай илгээгдлээ.</strong>
-              <span>Аяллын мэдээлэл бүртгэгдлээ.</span>
-            </div>
+      <main className="page pageCentered">
+        <div className="successCard">
+          <div className="successIcon">
+            <CheckCircle2 size={40} strokeWidth={2.2} />
           </div>
+          <h2>Амжилттай илгээгдлээ</h2>
+          <p>Аяллын мэдээлэл бүртгэгдлээ. Аюулгүй аялаарай!</p>
         </div>
+        <Footer />
       </main>
     );
   }
 
   return (
     <main className="page">
-      <div className="formCard">
-        <header className="docHeader">
+      <div className="shell">
+        <header className="hero">
           <div className="logoBox">
             <CompanyLogo />
           </div>
           <div className="titleArea">
-            <h1>ЗАСАГЧАНДМАНЬ МАЙНЗ ХХК</h1>
-            <h1>АТҮТ БОЛОН ЗАМЫН УНААГААР ЗОРЧИХ ҮЕИЙН</h1>
-            <h1>АЮУЛГҮЙ АЖИЛЛАГААНЫ ЗААВАРЧИЛГАА</h1>            
+            <p className="eyebrow">Засагчандмань Майнз ХХК</p>
+            <h1>
+              АТҮТ болон замын унаагаар зорчих үеийн аюулгүй ажиллагааны
+              зааварчилгаа
+            </h1>
             <div className="meta">
               <span>Хувилбар: 01</span>
-              <span>   ЗЧМ-УТ-Ж39-Х01 Холын аяллын журам    </span>
+              <span>ЗЧМ-УТ-Ж39-Х01 Холын аяллын журам</span>
             </div>
           </div>
         </header>
 
-        <form onSubmit={submit}>
-          <Section title="Үндсэн мэдээлэл">
+        <form onSubmit={submit} className="formStack">
+          <Section step={1} icon={ClipboardList} title="Үндсэн мэдээлэл">
             <Field label="Компани">
               <select name="company" value={form.company} onChange={updateForm}>
                 {companyOptions.map((company) => (
@@ -335,7 +350,7 @@ function App() {
             )}
           </Section>
 
-          <Section title="Тээврийн хэрэгсэл">
+          <Section step={2} icon={Truck} title="Тээврийн хэрэгсэл">
             <Field label="Аялах тээврийн хэрэгсэл *">
               <select
                 name="transport"
@@ -409,13 +424,20 @@ function App() {
             </>)}
           </Section>
 
-          <Section title={`Зорчих ажилтан (${employees.length})`}>
-            <p className="helper">Хамгийн ихдээ 4 ажилтан бүртгэх боломжтой.</p>
-
+          <Section
+            step={3}
+            icon={Users}
+            title="Зорчих ажилтан"
+            badge={`${employees.length} / 4`}
+            hint="Хамгийн ихдээ 4 ажилтан бүртгэх боломжтой."
+          >
             {employees.map((employee, index) => (
               <div className="employeeCard" key={index}>
                 <div className="employeeHead">
-                  <strong>Ажилтан {index + 1}</strong>
+                  <span className="employeeTag">
+                    <span className="employeeNum">{index + 1}</span>
+                    Ажилтан
+                  </span>
                   {employees.length > 1 && (
                     <button
                       type="button"
@@ -478,43 +500,33 @@ function App() {
             )}
           </Section>
 
-          <Section title="Аюулгүй ажиллагааны зааварчилгаа">
-            <div className="signatureBox">
-              <div className="signatureHeader">
-                <span>Гарын үсэг</span>
-                <label className="uploadSignature">
-                  <input type="file" accept="image/*" onChange={handleSignatureUpload} />
-                  <span>Зураг сонгох</span>
-                </label>
-              </div>
+          <Section step={4} icon={ShieldCheck} title="Аюулгүй ажиллагааны зааварчилгаа">
+            <div className="readRow">
+              <button
+                type="button"
+                className={`safetyToggle${showSafety ? " open" : ""}`}
+                aria-expanded={showSafety}
+                onClick={() => setShowSafety(!showSafety)}
+              >
+                <span className="safetyToggleIcon" aria-hidden="true">
+                  <ShieldCheck size={20} />
+                </span>
+                <span className="safetyToggleText">
+                  <strong>Зааварчилгаа унших</strong>
+                  <small>Хувийн аюулгүй байдал, аяллын аюулгүй байдал, хүнсний эрүүл ахуй</small>
+                </span>
+                <ChevronDown className="chevron" size={20} aria-hidden="true" />
+              </button>
 
-              {signature ? (
-                <img className="signaturePreview" src={signature} alt="Signature preview" />
-              ) : (
-                <div className="signaturePlaceholder">Гарын үсгийн зураг оруулна уу</div>
-              )}
+              <button
+                type="button"
+                className="safetyDownload"
+                onClick={() => setShowReader(true)}
+              >
+                <FileText size={18} aria-hidden="true" />
+                <span>Зааварчилгаа PDF унших</span>
+              </button>
             </div>
-
-            <button
-              type="button"
-              className="safetyToggle"
-              onClick={() => setShowSafety(!showSafety)}
-            >
-              <span>
-                <strong>Зааварчилгаа унших</strong>
-                <small>Хувийн аюулгүй байдал, аяллын аюулгүй байдал, хүнсний эрүүл ахуй</small>
-              </span>
-              {showSafety ? <ChevronUp /> : <ChevronDown />}
-            </button>
-
-            <button
-              type="button"
-              className="safetyDownload"
-              onClick={() => setShowReader(true)}
-            >
-              <FileText size={18} aria-hidden="true" />
-              <span>Зааварчилгаа PDF унших</span>
-            </button>
             {showReader && <SafetyReader onClose={() => setShowReader(false)} />}
 
             {showSafety && (
@@ -543,16 +555,43 @@ function App() {
                 </SafetyBlock>
 
                 <div className="emergency">
-                  <strong>Яаралтай үед холбоо барих</strong>
-                  <span>Онцгой байдал: 105</span>
-                  <span>Цагдаа: 102</span>
-                  <span>Эмнэлэг: 103</span>
-                  <span>Байгууллага: 75053443</span>
+                  <strong>
+                    <PhoneCall size={16} aria-hidden="true" /> Яаралтай үед холбоо барих
+                  </strong>
+                  <div className="emergencyGrid">
+                    <a href="tel:105"><small>Онцгой байдал</small>105</a>
+                    <a href="tel:102"><small>Цагдаа</small>102</a>
+                    <a href="tel:103"><small>Эмнэлэг</small>103</a>
+                    <a href="tel:75053443"><small>Байгууллага</small>75053443</a>
+                  </div>
                 </div>
               </div>
             )}
 
-            <label className="accept">
+            <div className="signatureBox">
+              <div className="signatureHeader">
+                <span>Гарын үсэг *</span>
+                {signature && <span className="signatureOk"><CheckCircle2 size={15} /> Оруулсан</span>}
+              </div>
+
+              <label className={`signatureDrop${signature ? " hasImage" : ""}`}>
+                <input type="file" accept="image/*" onChange={handleSignatureUpload} />
+                {signature ? (
+                  <>
+                    <img className="signaturePreview" src={signature} alt="Signature preview" />
+                    <span className="signatureChange">Өөр зураг сонгох</span>
+                  </>
+                ) : (
+                  <span className="signaturePlaceholder">
+                    <ImageUp size={26} aria-hidden="true" />
+                    <strong>Зураг сонгох</strong>
+                    <small>Гарын үсгийн зураг оруулна уу</small>
+                  </span>
+                )}
+              </label>
+            </div>
+
+            <label className={`accept${accepted ? " checked" : ""}`}>
               <input
                 type="checkbox"
                 checked={accepted}
@@ -566,19 +605,42 @@ function App() {
 
           <div className="submitArea">
             <button className="submitBtn" type="submit" disabled={!accepted || sending}>
-              {sending ? "Илгээж байна..." : "Илгээх"}
+              {sending ? (
+                <><Loader2 size={18} className="spin" aria-hidden="true" /> Илгээж байна...</>
+              ) : (
+                <><Send size={18} aria-hidden="true" /> Илгээх</>
+              )}
             </button>
           </div>
         </form>
       </div>
+      <Footer />
     </main>
   );
 }
 
-function Section({ title, children }) {
+function Footer() {
+  return (
+    <footer className="siteFooter">
+      Powered by <strong>Daniel Knight</strong>
+    </footer>
+  );
+}
+
+function Section({ step, icon: Icon, title, badge, hint, children }) {
   return (
     <section className="section">
-      <div className="sectionTitle">{title}</div>
+      <div className="sectionTitle">
+        <span className="sectionIcon" aria-hidden="true">
+          <Icon size={18} />
+        </span>
+        <div className="sectionHeading">
+          <span className="sectionStep">Алхам {step}</span>
+          <h2>{title}</h2>
+          {hint && <p className="helper">{hint}</p>}
+        </div>
+        {badge && <span className="sectionBadge">{badge}</span>}
+      </div>
       <div className="sectionBody">{children}</div>
     </section>
   );
