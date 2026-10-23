@@ -102,6 +102,7 @@ function App() {
 
   const [form, setForm] = useState({
     company: companyOptions[0].value,
+    otherCompany: "",
     department: "",
     travelDate: "",
     direction: "",
@@ -114,6 +115,7 @@ function App() {
   });
 
   const isPublicTransport = form.transport === "АТҮТ / Нийтийн тээвэр";
+  const isOtherCompany = form.company === "Бусад ХХК";
 
   const updateForm = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -149,6 +151,7 @@ function App() {
 
     }
 
+    if (isOtherCompany && !form.otherCompany.trim()) missing.push("Компанийн нэр");
     if (!form.department.trim()) missing.push("Харьяалагдах хэлтэс");
     if (!form.travelDate) missing.push("Аялах өдөр");
     if (!form.direction) missing.push("Аялах чиглэл");
@@ -180,6 +183,7 @@ function App() {
         body: JSON.stringify({
           form: {
             ...form,
+            company: isOtherCompany ? form.otherCompany.trim() : form.company,
             driver: isPublicTransport ? "" : form.driver,
             driverPhone: isPublicTransport ? "" : form.driverPhone,
             vehicle: isPublicTransport ? "" : `${form.vehicle.trim()}, ${form.vehiclePlate.trim()}`,
@@ -202,6 +206,7 @@ function App() {
       setEmployees([emptyEmployee()]);
       setForm({
         company: companyOptions[0].value,
+        otherCompany: "",
         department: "",
         travelDate: "",
         direction: "",
@@ -278,6 +283,19 @@ function App() {
                 ))}
               </select>
             </Field>
+
+            {isOtherCompany && (
+              <Field label="Компанийн нэр *">
+                <input
+                  required
+                  autoFocus
+                  name="otherCompany"
+                  value={form.otherCompany}
+                  onChange={updateForm}
+                  placeholder="Жишээ: Монгол майнинг ХХК"
+                />
+              </Field>
+            )}
 
             <Field label="Харьяалагдах хэлтэс *">
               <select
